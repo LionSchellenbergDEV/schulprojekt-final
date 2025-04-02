@@ -139,7 +139,7 @@ app.get('/profile', authMiddleware, (req, res) => {
             console.log(err);
             return res.status(500).json({message: "Datenbankfehler"});
         } else {
-            res.render('profile', {user:results[0]});
+            res.render('./secure/profile', {user:results[0]});
         }
     });
 });
@@ -159,4 +159,9 @@ app.post('/updateProfile', authMiddleware, (req, res) => {
             res.redirect('/profile');
         }
     });
-})
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'strict' });
+    res.redirect('/login');
+});
