@@ -20,9 +20,9 @@ nav {
     background: #064635;
 }
 nav ul {
-    width: 25%;
-    min-width: 25%;
-    max-width: 25%;
+    width: 10%;
+    min-width: 10%;
+    max-width: 10%;
     display: flex;
     justify-content: space-between;
     padding: 0;
@@ -32,4 +32,33 @@ nav ul {
 nav a {
     color: white;
     text-decoration: none;
+}
+#searchbar-wrapper {
+    width: fit-content;
+    min-width: 30%;
+}
+#searchbar-wrapper form {
+    display: flex;
+}
+#searchbar-wrapper input[type="text"] {
+    width: 100%;
+    min-width: 100%;
+    padding: 2%;
+    padding-left: 3%;
+    border: transparent;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+#searchbar-wrapper input[type="submit"] {
+    padding: 2%;
+    padding-right: 3%;
+    border: transparent;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+#searchbar-wrapper input[type="text"]:focus {
+    outline: none;
+}
+#searchbar-wrapper input[type="submit"]:focus {
+    outline: none;
 }

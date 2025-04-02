@@ -24,9 +24,42 @@ app.listen(PORT, () => { //Startet einen lokalen Webserver
     console.log(`Server started on port ${PORT}`);
 });
 
+const SECRET_KEY = process.env.SECRET_KEY; //Dient zur erzeugung eines sicheren Tokens, damit der Nutzer dauerhaft angemeldet bleibt
+
+//Prüft ob ein Nutzer angemeldet ist. Wenn ja, hat er einen Token und darf den Inhalt sehen, wenn nein, hat er keinen Token und darf deshalb nicht den Inhalt sehen. Es ist quasi der Türsteher.
+const authMiddleware = (req, res, next) => {
+    const token = req.cookies.token; // Liest den Token aus dem entsprechenden Cookie aus (falls er vorhanden ist)
+    if (!token) return res.status(401).json({ message: "Kein Token, Zugriff verweigert" });
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: "Ungültiges Token" });
+    }
+};
+
 //Route zur Startseite
 app.get('/', (req, res) => {
-    res.render('index'); //Schickt die .ejs Datei (die Website) an den Kunden
+    const token = req.cookies.token; // Liest den Token aus dem Cookie aus (falls er vorhanden ist)
+
+    if (!token) {
+        // Wenn kein Token vorhanden ist, wird die allgemeine "index"-Seite angezeigt
+        return res.render('index');
+    }
+
+    try {
+        // Wenn ein Token vorhanden ist, wird es überprüft
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.user = decoded;
+
+        // Wenn der Token gültig ist, wird die gesicherte "secure/index"-Seite angezeigt
+        return res.render('./secure/index');
+    } catch (error) {
+        // Wenn das Token ungültig ist, wird die allgemeine "index"-Seite angezeigt
+        return res.render('index');
+    }
 });
 
 //Route zur Anmeldeseite
@@ -79,22 +112,6 @@ app.post('/register', (req, res) => {
     res.redirect('/login'); //Leitet nach dem erfolgreichen erstellen eines neuen Nutzers den Anwender auf die Anmeldeseite weiter.
 
 });
-
-const SECRET_KEY = process.env.SECRET_KEY; //Dient zur erzeugung eines sicheren Tokens, damit der Nutzer dauerhaft angemeldet bleibt
-
-//Prüft ob ein Nutzer angemeldet ist. Wenn ja, hat er einen Token und darf den Inhalt sehen, wenn nein, hat er keinen Token und darf deshalb nicht den Inhalt sehen. Es ist quasi der Türsteher.
-const authMiddleware = (req, res, next) => {
-    const token = req.cookies.token; // Liest den Token aus dem entsprechenden Cookie aus (falls er vorhanden ist)
-    if (!token) return res.status(401).json({ message: "Kein Token, Zugriff verweigert" });
-
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(401).json({ message: "Ungültiges Token" });
-    }
-};
 
 
 // Login-Route
@@ -161,7 +178,29 @@ app.post('/updateProfile', authMiddleware, (req, res) => {
     });
 });
 
+//Route mit der sich ein Nutzer abmelden kann.
 app.get('/logout', (req, res) => {
     res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'strict' });
     res.redirect('/login');
 });
+
+//Route mit der man nach Nutzern suchen kann.
+app.get('/search',authMiddleware, (req, res) => {
+    const username = req.query.username;
+
+    const sql = "SELECT username, position FROM players WHERE username = ?";
+    con.query(sql, [username], async (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({message: "Datenbankfehler"});
+        } else {
+
+
+            if (results.length === 0) {
+                res.render('./secure/search-results', { error: "Kein Nutzer mit diesem Namen bekannt", users: [] });
+            } else {
+                res.render('./secure/search-results', { error: null, users: results });
+            }
+        }
+    });
+})

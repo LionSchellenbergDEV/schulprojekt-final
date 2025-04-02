@@ -7,10 +7,15 @@
 <body>
 <nav>
     <h3>Schulprojekt</h3>
+    <div id="searchbar-wrapper">
+        <form action="/search" method="GET">
+            <input type="text" placeholder="Nutzername..." name="username">
+            <input type="submit" value="suchen">
+        </form>
+    </div>
     <ul>
         <li><a href="/">Startseite</a></li>
         <li><a href="/profile">Profil</a></li>
-        <li><a href="/logout">Abmelden</a></li>
     </ul>
 </nav>
 <main>
@@ -37,5 +42,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Änderungen speichern</button>
 </form>
+    <a href="/logout"><button class="btn btn-danger">Abmelden</button></a>
 </body>
 </html>
