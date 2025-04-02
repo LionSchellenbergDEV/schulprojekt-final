@@ -5,6 +5,7 @@ const path = require('path');
 const bcrypt = require('bcrypt'); //zur verschlüsselung der Passwörter
 const jwt = require('jsonwebtoken'); //dient zur dauerhaften Anmeldung eines Nutzers (via Cookies)
 const cookieParser = require('cookie-parser'); //damit kann man Cookies setzen und löschen
+require('dotenv').config();
 
 //Stellt ejs als View Engine ein
 app.set("view engine", "ejs"); //dient zur dynamischen generierung von Webinhalten
@@ -41,9 +42,9 @@ app.get('/register', (req, res) => {
 const mysql = require("mysql2"); //importiert das Modul "mysql2"
 const con = mysql.createConnection({ //Erzeugt eine Verbindung zum SQL Server
     host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'schulprojekt',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 });
 
 //Route mit der man einen neuen Nutzer anlegen kann. Hier verwendet man app.post anstatt app.get, da app.post die eingegebenen Daten im Body, für den Nutzer unsichtbar, versendet.
@@ -79,7 +80,7 @@ app.post('/register', (req, res) => {
 
 });
 
-const SECRET_KEY = "geheimeSchluessel"; //Dient zur erzeugung eines sicheren Tokens, damit der Nutzer dauerhaft angemeldet bleibt
+const SECRET_KEY = process.env.SECRET_KEY; //Dient zur erzeugung eines sicheren Tokens, damit der Nutzer dauerhaft angemeldet bleibt
 
 //Prüft ob ein Nutzer angemeldet ist. Wenn ja, hat er einen Token und darf den Inhalt sehen, wenn nein, hat er keinen Token und darf deshalb nicht den Inhalt sehen. Es ist quasi der Türsteher.
 const authMiddleware = (req, res, next) => {
@@ -130,6 +131,7 @@ app.post('/login', (req, res) => {
     });
 });
 
+//Route zum Nutzerprofil
 app.get('/profile', authMiddleware, (req, res) => {
     const sql = "SELECT * FROM players WHERE id = ?";
     con.query(sql, [req.user.id], async (err, results) => {
@@ -142,6 +144,7 @@ app.get('/profile', authMiddleware, (req, res) => {
     });
 });
 
+//Mit dieser Route können Nutzer ihre persönlichen Daten ändern (Nutzername, E-Mail Adresse und Passwort)
 app.post('/updateProfile', authMiddleware, (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
