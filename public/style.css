@@ -62,3 +62,6 @@ nav a {
 #searchbar-wrapper input[type="submit"]:focus {
     outline: none;
 }
+main li{
+    margin-top: 1%;
+}

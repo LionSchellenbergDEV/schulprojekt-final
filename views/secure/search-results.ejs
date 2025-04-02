@@ -18,19 +18,39 @@
         <li><a href="/profile">Profil</a></li>
     </ul>
 </nav>
-<main>
-    <h1>Profil-Suche</h1>
+<main class="container mx-auto p-2">
+    <h1>Suchergebnis</h1>
 
     <% if (error) { %>
         <p style="color: red;"><%= error %></p>
     <% } %>
 
-    <ul>
+    <ul class="list-group">
         <% users.forEach(user => { %>
-            <li><%= user.username %></li>
-            <li><%= user.position %></li>
+            <li class="list-group-item"><h4><%= user.username %></h4>Position: <%= user.position %> <br> <br><p><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Zum Kampf herausfordern</button></p></li>
         <% }); %>
     </ul>
 </main>
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Kampfmodus wählen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Möchtest du <strong><%=users[0].username%></strong> zu einem Einzel- oder Gruppenkampf herausfordern?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success">Einzelkampf</button>
+                <button type="button" class="btn btn-warning">Gruppenkampf</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 </body>
 </html>
