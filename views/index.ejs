@@ -11,13 +11,141 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <title>Startseite</title>
 </head>
-<body>
+<body style="background-color:#141414;">
 <nav>
-    <h3>Schulprojekt</h3>
+    <h4>Eldoria</h4>
+    <div id="searchbar-wrapper">
+        <form action="/search" method="GET">
+            <input type="text" placeholder="Nutzername..." name="username">
+            <input type="submit" value="suchen">
+        </form>
+    </div>
     <ul>
         <li><a href="/">Startseite</a></li>
         <li><a href="/login">Anmeldung</a></li>
     </ul>
 </nav>
+<div id="hero">
+</div>
+<main>
+    <div id="spiel">
+        <img src="./images/Spielkarte.jpeg" width="30%" alt="">
+        <div id="game-description">
+            <h1>Willkommen in Eldoria!</h1>
+            <p>
+                Erkunde eine weitläufige Fantasy-Welt voller Magie und Gefahren. Wähle deine Klasse, entwickle einzigartige Fähigkeiten und stelle dich epischen Kämpfen gegen furchterregende Kreaturen. Gründe Gilden mit Freunden, meistere mächtige Zauber und beeinflusse mit deinen Entscheidungen eine tiefgründige Geschichte. Dein Abenteuer in Eldoria beginnt jetzt!
+            </p>
+            <button class="btn btn-primary">JETZT KOSTENLOS SPIELEN</button>
+        </div>
+    </div>
+    <div id="charaktere">
+        <h1>Charaktere</h1>
+        <div id="charakter-wrapper">
+            <div class="card" style="width: 18rem;" data-bs-toggle="modal" data-bs-target="#waechterDesWaldesModal">
+                <img src="/images/Krieger.jpeg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <p class="card-text">Wächter des Waldes</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="waechterDesWaldesModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title fs-5" id="staticBackdropLabel">Wächter des Waldes</h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/images/Krieger.jpeg" alt="">
+                            <p>
+                                Die Wächter des Waldes, ist eine Gruppe von Beschützern, die in den tiefen, mystischen Wäldern leben. Seine imposante Rüstung und das leuchtende Schwert sind Zeichen seiner Hingabe und seines Könnens im Kampf gegen die Dunkelheit, die den Wald bedroht. Die langen, geflochtenen Haare und die leuchtenden Augen verleihen ihm eine Aura des Geheimnisvollen und Übernatürlichen, die zu seiner Verbindung mit der Natur passt.                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;" data-bs-toggle="modal" data-bs-target="#kriegerDesBlutclanModal">
+                <img src="/images/Ork.jpeg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <p class="card-text">Krieger des Blutclan</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="kriegerDesBlutclanModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title fs-5" id="staticBackdropLabel">Krieger des Blutclan</h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/images/Ork.jpeg" alt="">
+                            <p>
+                                Die Krieger des Blutclans sind furchteinflößende Berserker, die tief in den dunklen Höhlen der Schattenberge leben. Mit tätowierten Körpern, die uralte Stammeszeichen tragen, und grob geschmiedeten Waffen aus schwarzem Stahl, verkörpern sie rohe Kraft und unerschütterliche Loyalität zu ihrem Clan. Ihre zerschlissene, lederne Rüstung ist mehr Symbol für vergangene Schlachten als echter Schutz – denn sie fürchten keinen Tod. </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;" data-bs-toggle="modal" data-bs-target="#schattenwaechterinModal">
+                <img src="/images/Kriegerin.jpeg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <p class="card-text">Schattenwächterin</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="schattenwaechterinModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title fs-5" id="staticBackdropLabel">Schattenwächterin</h3>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/images/Kriegerin.jpeg" alt="">
+                            <p>
+                                Die Schattenwächterin ist eine stille Legende der alten Wälder – eine Kriegerin, deren Zorn so tödlich ist wie ihre Entschlossenheit. Mit eisblauen Augen, die jede Lüge durchbohren, und einer Rüstung, geschmiedet aus dunklem Stahl und uraltem Leder, streift sie durch das grüne Dickicht, immer auf der Suche nach Bedrohungen für das Gleichgewicht der Natur. In ihren Händen ruht ein verzauberter Hammer, Symbol des Schutzes, und ein geschwungener Krummsäbel, der im Nahkampf tödlich präzise ist.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;" data-bs-toggle="modal" data-bs-target="#reiterDerWildnisModal">
+                <img src="/images/Zentaur.jpeg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <p class="card-text">Reiter der Wildnis</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="reiterDerWildnisModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title fs-5" id="staticBackdropLabel">Reiter der Wildnis</h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="/images/Zentaur.jpeg" alt="">
+                        <p>
+                            Die Reiter der Wildnis sind eine uralte Bruderschaft von Zentauren, tief verbunden mit den Nebelwäldern, die sie ihre Heimat nennen. Halb Krieger, halb Naturgewalt, beherrschen sie das Gelände mit unaufhaltsamer Kraft und legendärer Geschwindigkeit. Ihre Körper sind lebendige Waffen – gepanzert mit gehärteter Bronze, bewaffnet mit gekrümmten Klingen, die mit dem Blut zahlloser Feinde getränkt sind.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+<footer>
+    <ul>
+        <li><a href="">Datenschutzerklärung</a></li>
+        <li><a href="">Cookie Richtlinien</a></li>
+        <li>&copy; Copyright Lion Schellenberg, 2025</li>
+    </ul>
+</footer>
+</body>
+</html>
+
+
 </body>
 </html>
