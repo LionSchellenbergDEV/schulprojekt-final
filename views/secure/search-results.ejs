@@ -4,7 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <title>Suchergebnis</title>
 </head>
-<body>
+<body style="background-color:#141414;">
 <nav>
     <h3>Schulprojekt</h3>
     <div id="searchbar-wrapper">
@@ -25,12 +25,24 @@
         <p style="color: red;"><%= error %></p>
     <% } %>
 
-    <ul class="list-group">
         <% users.forEach(user => { %>
-            <li class="list-group-item"><h4><%= user.username %></h4>Position: <%= user.position %> <br> <br><p><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Zum Kampf herausfordern</button></p></li>
+            <div class="card" style="width: 18rem; background-color: #262626; color: white; cursor:context-menu;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title"><%= user.username %></h5>
+                    <p class="card-text">Position: <%= user.position %></p>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Zum Kampf herausfordern</button>
+                </div>
+            </div>
         <% }); %>
-    </ul>
 </main>
+
+<footer>
+    <ul>
+        <li><a href="/datenschutzerklaerung">Datenschutzerklärung</a></li>
+        <li><a href="/datenschutzerklaerung#cookieRichtlinien">Cookie Richtlinien</a></li>
+    </ul>
+</footer>
 
 
 
