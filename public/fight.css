@@ -1,0 +1,40 @@
+input {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 1% 2%;
+}
+
+select {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 1% 2%;
+}
+input[type="text"] {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+}
+input[type="number"] {
+    width: 30%;
+    min-width: 30%;
+}
+select {
+    width: 33%;
+    min-width: 30%;
+    max-width: 30%;
+}
+input[type="submit"] {
+    width: 30%;
+    min-width: 30%;
+    max-width: 30%;
+}
+#group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2%;
+}
+.mx-auto {
+    padding: 2%;
+    border: 1px solid #222222;
+    border-radius: 10px;
+}

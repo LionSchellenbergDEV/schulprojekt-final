@@ -34,33 +34,7 @@ nav a {
     color: white;
     text-decoration: none;
 }
-#searchbar-wrapper {
-    width: fit-content;
-    min-width: 30%;
-}
-#searchbar-wrapper form {
-    display: flex;
-}
-#searchbar-wrapper input[type="text"] {
-    width: 100%;
-    min-width: 100%;
-    padding: 1% 4%;
-    border: transparent;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-#searchbar-wrapper input[type="submit"] {
-    padding: 1% 4%;
-    border: transparent;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-#searchbar-wrapper input[type="text"]:focus {
-    outline: none;
-}
-#searchbar-wrapper input[type="submit"]:focus {
-    outline: none;
-}
+
 #hero {
     width: 100%;
     min-width: 100%;
@@ -152,6 +126,11 @@ main {
     display: flex;
     justify-content: space-between;
 }
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
 footer {
     padding: 2%;
     background: #222222;
@@ -165,4 +144,46 @@ footer ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
+}
+
+
+
+#search-wrapper {
+    width: 20%;
+    min-width: 20%;
+}
+#search-wrapper input {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-bottom: 6%;
+}
+#search-wrapper label {
+    margin-bottom: 2%;
+}
+#result-wrapper {
+    width: 70%;
+    min-width: 70%;
+    max-width: 70%;
+    padding: 2%;
+    background: #222222;
+    height: fit-content;
+}
+#search-results {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4%;
+}
+#results {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+#results .card {
+    width: 30%;
+    min-width: 30%;
+    max-width: 30%;
 }

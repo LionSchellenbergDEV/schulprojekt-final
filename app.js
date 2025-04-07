@@ -184,23 +184,66 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-//Route mit der man nach Nutzern suchen kann.
-app.get('/search',authMiddleware, (req, res) => {
-    const username = req.query.username;
 
-    const sql = "SELECT username, position FROM players WHERE username = ?";
-    con.query(sql, [username], async (err, results) => {
+//Route mit der man nach Nutzern suchen kann und einen Kampf kämpft.
+app.get('/search', authMiddleware, (req, res) => {
+    const currentUserId = req.user.id;
+
+    // Wir extrahieren die Eingabewerte aus den Query-Parametern
+    const { username, elo, position } = req.query;
+
+    // Starten mit einer Grund-SQL-Abfrage, die alle Spieler außer dem aktuellen User auswählt
+    let sql = "SELECT username, position, eloScore FROM players WHERE id != ?";
+    let params = [currentUserId];
+
+    // Hinzufügen von Bedingungen, wenn die Parameter angegeben sind
+    if (username) {
+        sql += " AND username LIKE ?";
+        params.push(`%${username}%`);
+    }
+    if (elo) {
+        sql += " AND eloScore = ?";
+        params.push(elo);
+    }
+    if (position && position !== "Alle") {
+        sql += " AND position = ?";
+        params.push(position);
+    }
+
+    // Ausführen der SQL-Abfrage
+    con.query(sql, params, async (err, results) => {
         if (err) {
             console.log(err);
-            return res.status(500).json({message: "Datenbankfehler"});
+            return res.status(500).json({ message: "Datenbankfehler" });
         } else {
-
-
             if (results.length === 0) {
-                res.render('./secure/search-results', { error: "Kein Nutzer mit diesem Namen bekannt", users: [] });
+                let errorMessage = 'Leider konnten keine Spieler gefunden werden, die deinen Kriterien entsprechen.';
+                // Wenn kein Filter gesetzt wurde, zeigen wir an, dass keine Spieler existieren
+                if (!username && !elo && !position) {
+                    errorMessage = 'Leider gibt es keine Spieler gegen die du kämpfen kannst.';
+                }
+                res.render('./secure/search-results', {
+                    users: [],
+                    searchValues: {
+                        username:  '',
+                        position:  '',
+                        elo:''
+                    }});
             } else {
-                res.render('./secure/search-results', { error: null, users: results });
+                res.render('./secure/search-results', {
+                    error: null,
+                    users: results,
+                    searchValues: {
+                        username: username || '',
+                        position: position || '',
+                        elo: elo || ''
+                    }});
             }
         }
     });
+});
+
+app.get("/fight", authMiddleware, (req, res) => {
+    res.render('./secure/fight');
 })
+
