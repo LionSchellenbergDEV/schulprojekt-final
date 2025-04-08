@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einzelkampf</title>
+    <script src="/script.js"></script>
+</head>
+<body>
+<h1>Einzelkampf</h1>
+<strong id="username"><%=currentUserData.username%></strong>
+<p>Position: <%= currentUserData.position %></p>
+<p id="eloScore" data-elo="<%=currentUserData.eloScore%>">ELO: <%= currentUserData.eloScore %> Punkte</p>
+<h1>vs.</h1>
+<strong id="usernameOpponent"><%=userData.username%></strong>
+<p>Position: <%= userData.position %></p>
+<p id="eloScoreOpponent" data-elo="<%=userData.eloScore%>">ELO: <%= userData.eloScore %> Punkte</p>
+
+<button onclick="kaempfen()">Kämpfen</button>
+</body>
+</html>

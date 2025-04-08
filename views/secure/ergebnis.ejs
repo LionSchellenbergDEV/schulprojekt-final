@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ergebnis</title>
+    <style>
+        /* Ladebildschirm-Styling */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+<!-- Ladebildschirm -->
+<div id="loadingScreen">
+    Der Kampf läuft...
+</div>
+
+<main style="display:none;">
+    <h1>
+        <% if (winner === 'A') { %>
+            <%= playerA.username %> hat den Kampf gewonnen!
+        <% } else if (winner === 'B') { %>
+            <%= playerB.username %> hat den Kampf gewonnen!
+        <% } %>
+    </h1>
+    <ul>
+        <li><%= playerA.username %></li>
+        <li>Elo: <%= playerA.newElo %></li>
+    </ul>
+    <ul>
+        <li><%= playerB.username %></li>
+        <li>Elo: <%= playerB.newElo %></li>
+    </ul>
+</main>
+
+<script>
+    // Warte 5 Sekunden und dann den Ladebildschirm ausblenden
+    setTimeout(function() {
+        // Ladebildschirm ausblenden
+        document.getElementById('loadingScreen').style.display = 'none';
+        // Main-Content anzeigen
+        document.querySelector('main').style.display = 'block';
+    }, 5000);  // 5000 Millisekunden = 5 Sekunden
+</script>
+</body>
+</html>

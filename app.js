@@ -6,9 +6,14 @@ const bcrypt = require('bcrypt'); //zur verschlüsselung der Passwörter
 const jwt = require('jsonwebtoken'); //dient zur dauerhaften Anmeldung eines Nutzers (via Cookies)
 const cookieParser = require('cookie-parser'); //damit kann man Cookies setzen und löschen
 require('dotenv').config();
+const bodyParser = require('body-parser');
+
+const session = require('express-session');
 
 //Stellt ejs als View Engine ein
 app.set("view engine", "ejs"); //dient zur dynamischen generierung von Webinhalten
+
+app.use(bodyParser.json());
 
 app.use(cookieParser()); //sagt der App dass sie den Cookie Parser nutzen soll
 
@@ -225,8 +230,8 @@ app.get('/search', authMiddleware, (req, res) => {
                 res.render('./secure/search-results', {
                     users: [],
                     searchValues: {
-                        username:  '',
-                        position:  '',
+                        username: '',
+                        position: '',
                         elo:''
                     }});
             } else {
@@ -241,6 +246,81 @@ app.get('/search', authMiddleware, (req, res) => {
             }
         }
     });
+});
+
+app.get("/einzelkampf/:username", authMiddleware, (req, res) => {
+    const username = req.params.username;  // Username aus der URL holen
+    const currentUserId = req.user.id;
+
+    // SQL-Abfrage
+    const sql = `SELECT eloScore, username, position FROM players WHERE username = ? UNION SELECT eloScore, username, position FROM players WHERE id = ?`;
+
+    con.execute(sql, [username, currentUserId], (err, results) => {
+        if (err) {
+            console.error('Datenbankfehler:', err);
+            return res.status(500).json({ error: 'Datenbankfehler' });
+        }
+
+        // Ergebnisse aufteilen
+        const [userData, currentUserData] = results;
+        return res.render('./secure/einzelkampf', {
+            userData: userData,         // Daten des Benutzers mit dem 'username'
+            currentUserData: currentUserData, // Daten des aktuellen Benutzers
+        });
+    });
+});
+
+//Session-Middleware einrichen
+app.use(session({
+    secret: "SECRET_KEY",
+    resave:false,
+    saveUninitialized: true
+}))
+
+
+app.post('/updateElo', (req, res) => {
+    const { playerA, playerB, winner } = req.body;
+
+    // SQL-Update für Spieler A
+    const updatePlayerA = 'UPDATE players SET eloScore = ? WHERE username = ?';
+    con.query(updatePlayerA, [playerA.newElo, playerA.username], (err, result) => {
+        if (err) {
+            console.error('Fehler beim Aktualisieren von Spieler A:', err);
+            return res.status(500).json({ message: 'Fehler beim Aktualisieren von Spieler A' });
+        }
+        console.log('Spieler A Elo erfolgreich aktualisiert');
+
+        // SQL-Update für Spieler B
+        const updatePlayerB = 'UPDATE players SET eloScore = ? WHERE username = ?';
+        con.query(updatePlayerB, [playerB.newElo, playerB.username], (err, result) => {
+            if (err) {
+                console.error('Fehler beim Aktualisieren von Spieler B:', err);
+                return res.status(500).json({ message: 'Fehler beim Aktualisieren von Spieler B' });
+            }
+            console.log('Spieler B Elo erfolgreich aktualisiert');
+
+            // Speichern der Daten in der Session
+            req.session.playerA = playerA;
+            req.session.playerB = playerB;
+            req.session.winner = winner;
+
+            // Erfolgreiche Antwort zurückgeben
+            return res.json({ message: 'Elo-Werte erfolgreich aktualisiert und gespeichert' });
+        });
+    });
+});
+
+// Ergebnisseite anzeigen
+app.get('/ergebnis', (req, res) => {
+    // Hole die Daten aus der Session
+    const { playerA, playerB, winner } = req.session;
+
+    if (!playerA || !playerB || !winner) {
+        return res.status(400).json({ message: 'Keine Ergebnisse verfügbar' });
+    }
+
+    // Render die Ergebnisseite mit den gespeicherten Session-Daten
+    res.render('./secure/ergebnis', { playerA, playerB, winner });
 });
 
 app.get("/fight", authMiddleware, (req, res) => {

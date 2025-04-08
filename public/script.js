@@ -1,29 +1,47 @@
-function filterCards() {
-    // Holen der Eingabewerte
-    const usernameFilter = document.getElementById('username').value.toLowerCase();
-    const positionFilter = document.getElementById('position').value.toLowerCase();
-    const eloFilter = document.getElementById('eloScore').value;
+function kaempfen() {
+    const eloA = parseInt(document.getElementById("eloScore").dataset.elo);
+    const eloB = parseInt(document.getElementById("eloScoreOpponent").dataset.elo);
 
-    // Holen aller Cards
-    const cards = document.querySelectorAll('#players .card');
+    const usernameA = document.getElementById("username").innerText;
+    const usernameB = document.getElementById("usernameOpponent").innerText;
 
-    // Durch die Karten iterieren und filtern
-    cards.forEach(card => {
-        // Holen der `data-*` Attribute der Karte
-        const username = card.getAttribute('data-username').toLowerCase();
-        const position = card.getAttribute('data-position').toLowerCase();
-        const elo = card.getAttribute('data-elo');
+    const winner = Math.random() < 0.5 ? "A" : "B";
+    const k = 32;
 
-        // Überprüfen, ob die Karte den Filterkriterien entspricht
-        const matchesUsername = usernameFilter ? username.includes(usernameFilter) : true;
-        const matchesPosition = positionFilter ? position.includes(positionFilter) : true;
-        const matchesElo = eloFilter ? elo >= eloFilter : true;
+    const expectedA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400));
+    const expectedB = 1 - expectedA;
 
-        // Zeige die Karte an, wenn alle Filterkriterien zutreffen
-        if (matchesUsername && matchesPosition && matchesElo) {
-            card.style.display = ''; // Zeige die Karte an
-        } else {
-            card.style.display = 'none'; // Verstecke die Karte
-        }
-    });
+    const scoreA = winner === "A" ? 1 : 0;
+    const scoreB = 1 - scoreA;
+
+    const newEloA = Math.round(eloA + k * (scoreA - expectedA));
+    const newEloB = Math.round(eloB + k * (scoreB - expectedB));
+
+    // ELO im DOM aktualisieren
+    document.getElementById("eloScore").innerText = `ELO: ${newEloA} Punkte`;
+    document.getElementById("eloScoreOpponent").innerText = `ELO: ${newEloB} Punkte`;
+
+    // Fetch senden
+    // FRONTEND: Statt flat → verpacke es wie das Backend erwartet
+    fetch('/updateElo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            playerA: { username: usernameA, newElo: newEloA },
+            playerB: { username: usernameB, newElo: newEloB },
+            winner: winner
+        })
+    })
+
+        .then(response => {
+            if (!response.ok) throw new Error("Fehler beim Senden der ELO-Daten.");
+            return response.json();
+        })
+        .then(data => {
+            window.location.href = '/ergebnis';
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Ein Fehler ist aufgetreten beim Aktualisieren der ELO-Werte.");
+        });
 }
