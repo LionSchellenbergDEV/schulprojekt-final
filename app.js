@@ -6,14 +6,9 @@ const bcrypt = require('bcrypt'); //zur verschlüsselung der Passwörter
 const jwt = require('jsonwebtoken'); //dient zur dauerhaften Anmeldung eines Nutzers (via Cookies)
 const cookieParser = require('cookie-parser'); //damit kann man Cookies setzen und löschen
 require('dotenv').config();
-const bodyParser = require('body-parser');
-
-const session = require('express-session');
 
 //Stellt ejs als View Engine ein
 app.set("view engine", "ejs"); //dient zur dynamischen generierung von Webinhalten
-
-app.use(bodyParser.json());
 
 app.use(cookieParser()); //sagt der App dass sie den Cookie Parser nutzen soll
 
@@ -170,10 +165,11 @@ app.get('/profile', authMiddleware, (req, res) => {
 app.post('/updateProfile', authMiddleware, (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
-    const password = bcrypt.hashSync(req.body.password, 12);
+    const position = req.body.position;
 
-    const sql = "UPDATE players SET username = ?, email = ?, password = ?   WHERE id = ?";
-    con.query(sql, [username, email, password, req.user.id], async (err, results) => {
+
+    const sql = "UPDATE players SET username = ?, email = ?, position = ?   WHERE id = ?";
+    con.query(sql, [username, email, position, req.user.id], async (err, results) => {
         if (err) {
             console.log(err);
             return res.status(500).json({message: "Datenbankfehler"});
@@ -189,141 +185,23 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
+//Route mit der man nach Nutzern suchen kann.
+app.get('/search',authMiddleware, (req, res) => {
+    const username = req.query.username;
 
-//Route mit der man nach Nutzern suchen kann und einen Kampf kämpft.
-app.get('/search', authMiddleware, (req, res) => {
-    const currentUserId = req.user.id;
-
-    // Wir extrahieren die Eingabewerte aus den Query-Parametern
-    const { username, elo, position } = req.query;
-
-    // Starten mit einer Grund-SQL-Abfrage, die alle Spieler außer dem aktuellen User auswählt
-    let sql = "SELECT username, position, eloScore FROM players WHERE id != ?";
-    let params = [currentUserId];
-
-    // Hinzufügen von Bedingungen, wenn die Parameter angegeben sind
-    if (username) {
-        sql += " AND username LIKE ?";
-        params.push(`%${username}%`);
-    }
-    if (elo) {
-        sql += " AND eloScore = ?";
-        params.push(elo);
-    }
-    if (position && position !== "Alle") {
-        sql += " AND position = ?";
-        params.push(position);
-    }
-
-    // Ausführen der SQL-Abfrage
-    con.query(sql, params, async (err, results) => {
+    const sql = "SELECT username, position FROM players WHERE username = ?";
+    con.query(sql, [username], async (err, results) => {
         if (err) {
             console.log(err);
-            return res.status(500).json({ message: "Datenbankfehler" });
+            return res.status(500).json({message: "Datenbankfehler"});
         } else {
+
+
             if (results.length === 0) {
-                let errorMessage = 'Leider konnten keine Spieler gefunden werden, die deinen Kriterien entsprechen.';
-                // Wenn kein Filter gesetzt wurde, zeigen wir an, dass keine Spieler existieren
-                if (!username && !elo && !position) {
-                    errorMessage = 'Leider gibt es keine Spieler gegen die du kämpfen kannst.';
-                }
-                res.render('./secure/search-results', {
-                    users: [],
-                    searchValues: {
-                        username: '',
-                        position: '',
-                        elo:''
-                    }});
+                res.render('./secure/search-results', { error: "Kein Nutzer mit diesem Namen bekannt", users: [] });
             } else {
-                res.render('./secure/search-results', {
-                    error: null,
-                    users: results,
-                    searchValues: {
-                        username: username || '',
-                        position: position || '',
-                        elo: elo || ''
-                    }});
+                res.render('./secure/search-results', { error: null, users: results });
             }
         }
     });
-});
-
-app.get("/einzelkampf/:username", authMiddleware, (req, res) => {
-    const username = req.params.username;  // Username aus der URL holen
-    const currentUserId = req.user.id;
-
-    // SQL-Abfrage
-    const sql = `SELECT eloScore, username, position FROM players WHERE username = ? UNION SELECT eloScore, username, position FROM players WHERE id = ?`;
-
-    con.execute(sql, [username, currentUserId], (err, results) => {
-        if (err) {
-            console.error('Datenbankfehler:', err);
-            return res.status(500).json({ error: 'Datenbankfehler' });
-        }
-
-        // Ergebnisse aufteilen
-        const [userData, currentUserData] = results;
-        return res.render('./secure/einzelkampf', {
-            userData: userData,         // Daten des Benutzers mit dem 'username'
-            currentUserData: currentUserData, // Daten des aktuellen Benutzers
-        });
-    });
-});
-
-//Session-Middleware einrichen
-app.use(session({
-    secret: "SECRET_KEY",
-    resave:false,
-    saveUninitialized: true
-}))
-
-
-app.post('/updateElo', (req, res) => {
-    const { playerA, playerB, winner } = req.body;
-
-    // SQL-Update für Spieler A
-    const updatePlayerA = 'UPDATE players SET eloScore = ? WHERE username = ?';
-    con.query(updatePlayerA, [playerA.newElo, playerA.username], (err, result) => {
-        if (err) {
-            console.error('Fehler beim Aktualisieren von Spieler A:', err);
-            return res.status(500).json({ message: 'Fehler beim Aktualisieren von Spieler A' });
-        }
-        console.log('Spieler A Elo erfolgreich aktualisiert');
-
-        // SQL-Update für Spieler B
-        const updatePlayerB = 'UPDATE players SET eloScore = ? WHERE username = ?';
-        con.query(updatePlayerB, [playerB.newElo, playerB.username], (err, result) => {
-            if (err) {
-                console.error('Fehler beim Aktualisieren von Spieler B:', err);
-                return res.status(500).json({ message: 'Fehler beim Aktualisieren von Spieler B' });
-            }
-            console.log('Spieler B Elo erfolgreich aktualisiert');
-
-            // Speichern der Daten in der Session
-            req.session.playerA = playerA;
-            req.session.playerB = playerB;
-            req.session.winner = winner;
-
-            // Erfolgreiche Antwort zurückgeben
-            return res.json({ message: 'Elo-Werte erfolgreich aktualisiert und gespeichert' });
-        });
-    });
-});
-
-// Ergebnisseite anzeigen
-app.get('/ergebnis', (req, res) => {
-    // Hole die Daten aus der Session
-    const { playerA, playerB, winner } = req.session;
-
-    if (!playerA || !playerB || !winner) {
-        return res.status(400).json({ message: 'Keine Ergebnisse verfügbar' });
-    }
-
-    // Render die Ergebnisseite mit den gespeicherten Session-Daten
-    res.render('./secure/ergebnis', { playerA, playerB, winner });
-});
-
-app.get("/fight", authMiddleware, (req, res) => {
-    res.render('./secure/fight');
 })
-

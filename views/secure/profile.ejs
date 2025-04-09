@@ -16,26 +16,32 @@
 <main>
 <form action="/updateProfile" method="post">
     <div class="mb-3">
-        <label for="username" class="form-label">Nutzername</label>
+        <label for="username" class="form-label">username</label>
         <input type="text" class="form-control" id="username" name="username" value="<%=user.username%>">
     </div>
     <div class="mb-3">
-        <label for="firstname" class="form-label">Vorname</label>
-        <input type="text" class="form-control" id="firstname" name="firstname" readonly disabled placeholder="<%=user.firstname%>">
-    </div>
-    <div class="mb-3">
-        <label for="lastname" class="form-label">Nachname</label>
-        <input type="text" class="form-control" id="lastname" name="lastname" readonly disabled placeholder="<%=user.lastname%>">
-    </div>
-    <div class="mb-3">
-        <label for="email" class="form-label">E-Mail Adresse</label>
+        <label for="email" class="form-label">E-Mail</label>
         <input type="email" class="form-control" id="email" name="email" value="<%=user.email%>">
     </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password">
+    <%# Hier wird die Lane position als ein select drop down gegeben %>
+    <div class="mb-3">  <label for="position" class="form-label">Lane Position</label>
+            <select name="position" id="position">
+                <% ["Top Lane", "Jungle", "Mid lane", "Bottom lane"].forEach(selectedLane => { %>
+                    <option value="<%= selectedLane %>" <%= user.position == selectedLane ? "selected" : "" %>>
+                        <%= selectedLane %>
+                    </option>
+                <% }) %>
+
+            </select>
     </div>
+
+
+
     <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+
+
+
+
 </form>
     <a href="/logout"><button class="btn btn-danger">Abmelden</button></a>
 </main>
